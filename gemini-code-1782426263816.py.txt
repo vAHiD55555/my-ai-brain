@@ -1,0 +1,32 @@
+import streamlit as st
+import openai # یا کتابخانه مربوط به API دیگر
+
+# تنظیم صفحه
+st.set_page_config(page_title="اتاق فکر مدل‌ها", layout="centered")
+st.title("🤝 مشورت گروهی مدل‌های هوش مصنوعی")
+
+# دریافت کلیدهای API از کاربر (برای امنیت بیشتر)
+api_key = st.sidebar.text_input("API Key خود را وارد کنید", type="password")
+
+# تعریف مدل‌ها
+models = ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"]
+selected_model = st.selectbox("مدل داور را انتخاب کن:", models)
+
+# ورودی کاربر
+user_input = st.text_area("سوال یا محصول خود را وارد کن:")
+
+if st.button("شروع هم‌فکری"):
+    if not api_key:
+        st.error("لطفاً API Key را وارد کن.")
+    else:
+        with st.spinner("مدل‌ها در حال بحث و تبادل نظر..."):
+            # در اینجا منطق فراخوانی مدل‌ها قرار می‌گیرد
+            # مدل اول ایده می‌دهد، مدل دوم نقد می‌کند، مدل سوم جمع‌بندی می‌کند
+            st.info(f"داور ({selected_model}) در حال پردازش نظرات است...")
+            
+            # خروجی نهایی
+            st.success("نتیجه نهایی حاصل از هم‌فکری:")
+            st.write("اینجا پاسخ نهایی مدل‌ها نمایش داده می‌شود.")
+
+st.sidebar.markdown("---")
+st.sidebar.write("اطلاعات شما در سرورهای ابری Streamlit ذخیره نمی‌شود.")
