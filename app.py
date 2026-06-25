@@ -1,32 +1,25 @@
 import streamlit as st
-import openai # یا کتابخانه مربوط به API دیگر
+import google.generativeai as genai
 
-# تنظیم صفحه
-st.set_page_config(page_title="اتاق فکر مدل‌ها", layout="centered")
-st.title("🤝 مشورت گروهی مدل‌های هوش مصنوعی")
+# تنظیمات کلید از محیط امن استریم‌لیت
+GOOGLE_KEY = st.secrets["GOOGLE_API_KEY"]
+genai.configure(api_key=GOOGLE_KEY)
 
-# دریافت کلیدهای API از کاربر (برای امنیت بیشتر)
-api_key = st.sidebar.text_input("API Key خود را وارد کنید", type="password")
+def get_free_response(prompt, system_instruction):
+    model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instruction)
+    response = model.generate_content(prompt)
+    return response.text
 
-# تعریف مدل‌ها
-models = ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"]
-selected_model = st.selectbox("مدل داور را انتخاب کن:", models)
+st.title("🤖 Free AI Brainstorming Team")
 
-# ورودی کاربر
-user_input = st.text_area("سوال یا محصول خود را وارد کن:")
+user_input = st.text_area("Product concept:")
 
-if st.button("شروع هم‌فکری"):
-    if not api_key:
-        st.error("لطفاً API Key را وارد کن.")
-    else:
-        with st.spinner("مدل‌ها در حال بحث و تبادل نظر..."):
-            # در اینجا منطق فراخوانی مدل‌ها قرار می‌گیرد
-            # مدل اول ایده می‌دهد، مدل دوم نقد می‌کند، مدل سوم جمع‌بندی می‌کند
-            st.info(f"داور ({selected_model}) در حال پردازش نظرات است...")
-            
-            # خروجی نهایی
-            st.success("نتیجه نهایی حاصل از هم‌فکری:")
-            st.write("اینجا پاسخ نهایی مدل‌ها نمایش داده می‌شود.")
-
-st.sidebar.markdown("---")
-st.sidebar.write("اطلاعات شما در سرورهای ابری Streamlit ذخیره نمی‌شود.")
+if st.button("Consult"):
+    with st.status("Agent 1 (Brainstorming)..."):
+        idea = get_free_response(user_input, "You are a creative product manager.")
+    
+    with st.status("Agent 2 (Critique)..."):
+        critique = get_free_response(idea, "You are a strict technical critic. Find flaws in the idea.")
+        
+    st.write("### Idea:", idea)
+    st.write("### Critique:", critique)
